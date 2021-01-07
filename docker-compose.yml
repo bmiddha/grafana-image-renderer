@@ -1,0 +1,32 @@
+version: "3"
+
+services:
+  grafana:
+    image: grafana/grafana:7.3.6
+    restart: unless-stopped
+    volumes:
+      - grafana:/var/lib/grafana
+    environment:
+      - GF_DEFAULT_INSTANCE_NAME=grafana
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_SECURITY_ALLOW_EMBEDDING=true
+      - GF_RENDERING_SERVER_URL=http://renderer:8081/render
+      - GF_RENDERING_CALLBACK_URL=http://grafana:3000/
+      - GF_LOG_FILTERS=rendering:debug
+    networks:
+      - oventemp-net
+    ports:
+      - "3000:3000"
+  renderer:
+    image: bmiddha/grafana-image-renderer
+    restart: unless-stopped
+    networks:
+      - oventemp-net
+    environment:
+      - ENABLE_METRICS=true
+networks:
+  oventemp-net:
+
+volumes:
+  influxdb:
+  grafana:
